@@ -1,0 +1,95 @@
+# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//base/global/i18n/i18n.gni")
+import("//build/ohos.gni")
+
+group("build_module") {
+  deps = [
+    ":i18n",
+    ":intl",
+  ]
+}
+
+ohos_shared_library("intl") {
+  include_dirs = [
+    "//base/global/i18n/frameworks/intl/include",
+    "//base/global/i18n/interfaces/js/kits/include",
+  ]
+
+  sources = [ "src/intl_addon.cpp" ]
+
+  deps = [ "//base/global/i18n/frameworks/intl:intl_util" ]
+  external_deps = [
+    "hilog:libhilog",
+    "icu:shared_icuuc",
+    "libphonenumber:phonenumber_standard",
+    "napi:ace_napi",
+  ]
+  relative_install_dir = "module"
+  subsystem_name = "global"
+  part_name = "i18n"
+}
+
+ohos_shared_library("i18n") {
+  include_dirs = [
+    "//base/global/i18n/frameworks/intl/include",
+    "//base/global/i18n/interfaces/js/kits/include",
+    "//base/global/i18n/interfaces/native/inner_api/i18n/include",
+    "//base/global/i18n/services/include",
+  ]
+  cflags_cc = [ "-frtti" ]
+  remove_configs = [ "//build/config/compiler:no_rtti" ]
+  sources = [
+    "src/entity_recognizer_addon.cpp",
+    "src/error_util.cpp",
+    "src/holiday_manager_addon.cpp",
+    "src/i18n_addon.cpp",
+    "src/i18n_calendar_addon.cpp",
+    "src/i18n_normalizer_addon.cpp",
+    "src/i18n_system_addon.cpp",
+    "src/i18n_timezone_addon.cpp",
+    "src/i18n_unicode_addon.cpp",
+    "src/js_utils.cpp",
+    "src/system_locale_manager_addon.cpp",
+    "src/variable_convertor.cpp",
+  ]
+  deps = [
+    "//base/global/i18n/frameworks/intl:intl_util",
+    "//base/global/i18n/frameworks/intl:preferred_language",
+    "//base/global/i18n/services:i18n_sa_client",
+  ]
+  external_deps = [
+    "c_utils:utils",
+    "hilog:libhilog",
+    "icu:shared_icui18n",
+    "icu:shared_icuuc",
+    "ipc:ipc_core",
+    "libphonenumber:phonenumber_standard",
+    "libpng:libpng",
+    "napi:ace_napi",
+    "samgr:samgr_proxy",
+  ]
+
+  defines = []
+  if (i18n_support_app_preferred_language) {
+    defines += [ "SUPPORT_APP_PREFERRED_LANGUAGE" ]
+  }
+  if (i18n_support_ui) {
+    external_deps += [ "ability_base:configuration" ]
+    defines += [ "SUPPORT_GRAPHICS" ]
+  }
+  relative_install_dir = "module"
+  subsystem_name = "global"
+  part_name = "i18n"
+}
