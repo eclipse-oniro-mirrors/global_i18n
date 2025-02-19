@@ -1,0 +1,49 @@
+# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+group("fuzztest") {
+  testonly = true
+  deps = []
+
+  deps += [
+    # deps file
+    "breakiterator_fuzzer:BreakIteratorFuzzTest",
+    "calendar_fuzzer:CalendarFuzzTest",
+    "character_fuzzer:CharacterFuzzTest",
+    "collator_fuzzer:CollatorFuzzTest",
+    "datetimefilter_fuzzer:DateTimeFilterFuzzTest",
+    "datetimeformat_fuzzer:DateTimeFormatFuzzTest",
+    "datetimerule_fuzzer:DateTimeRuleFuzzTest",
+    "entityrecongnizer_fuzzer:EntityRecongnizerFuzzTest",
+    "holidaymanager_fuzzer:HolidayManagerFuzzTest",
+    "indexutil_fuzzer:IndexUtilFuzzTest",
+    "localecompare_fuzzer:LocaleCompareFuzzTest",
+    "localeconfigget_fuzzer:LocaleConfigGetFuzzTest",
+    "localeconfigset_fuzzer:LocaleConfigSetFuzzTest",
+    "localeinfo_fuzzer:LocaleInfoFuzzTest",
+    "measuredata_fuzzer:MeasureDataFuzzTest",
+    "normalizer_fuzzer:NormalizerFuzzTest",
+    "numberformat_fuzzer:NumberFormatFuzzTest",
+    "phonenumberformat_fuzzer:PhoneNumberFormatFuzzTest",
+    "phonenumbermatched_fuzzer:PhoneNumberMatchedFuzzTest",
+    "pluralrules_fuzzer:PluralRulesFuzzTest",
+    "preferredlanguage_fuzzer:PreferredLanguageFuzzTest",
+    "regexrule_fuzzer:RegexRuleFuzzTest",
+    "relativetimeformat_fuzzer:RelativeTimeFormatFuzzTest",
+    "rulesengine_fuzzer:RulesEngineFuzzTest",
+    "systemlocalemanager_fuzzer:SystemLocaleManagerFuzzTest",
+    "taboo_fuzzer:TabooFuzzTest",
+    "timezone_fuzzer:TimeZoneFuzzTest",
+    "utils_fuzzer:UtilsFuzzTest",
+  ]
+}
