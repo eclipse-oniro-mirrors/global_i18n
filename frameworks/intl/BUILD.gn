@@ -1,0 +1,377 @@
+# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//base/global/i18n/i18n.gni")
+import("//build/config/components/init/param/param_fixer.gni")
+import("//build/ohos.gni")
+
+group("build_module") {
+  deps = [
+    ":intl_util",
+    ":preferred_language",
+    "./parameter_upgrade:libphonenumber_version_txt",
+    "./parameter_upgrade:prefabrication_libphonenumber",
+    "./parameter_upgrade:prefabrication_timezone",
+    "./parameter_upgrade:taboo_version_txt",
+    "./parameter_upgrade:timezone_version_txt",
+  ]
+}
+
+group("geocoding_depends") {
+  external_deps = [ "libphonenumber:geocoding" ]
+}
+
+config("preferred_language_config") {
+  include_dirs = [
+    "//base/global/i18n/interfaces/native/inner_api/preferred_language/include",
+  ]
+}
+ohos_shared_library("preferred_language") {
+  public_configs = [ ":preferred_language_config" ]
+  include_dirs = [ "include" ]
+  sources = [ "src/preferred_language.cpp" ]
+  cflags_cc = [
+    "-Wall",
+    "-fPIC",
+  ]
+  deps = [ "//base/global/i18n/frameworks/intl:intl_util" ]
+  external_deps = [
+    "hilog:libhilog",
+    "init:libbegetutil",
+  ]
+  if (i18n_support_app_preferred_language) {
+    external_deps += [
+      "ability_runtime:app_context",
+      "bundle_framework:appexecfwk_base",
+      "bundle_framework:appexecfwk_core",
+      "c_utils:utils",
+      "ipc:ipc_core",
+      "resource_management:global_resmgr",
+      "samgr:samgr_proxy",
+    ]
+    if (!(host_os == "linux" && host_cpu == "arm64")) {
+      external_deps += [ "preferences:native_preferences" ]
+    }
+    defines = [ "SUPPORT_APP_PREFERRED_LANGUAGE" ]
+  }
+  subsystem_name = "global"
+  innerapi_tags = [ "platformsdk" ]
+  part_name = "i18n"
+}
+
+config("intl_util_config") {
+  include_dirs = [
+    "//base/global/i18n/frameworks/intl/entity_recognition/date_time_recognition/include",
+    "//base/global/i18n/frameworks/intl/entity_recognition/include",
+    "//base/global/i18n/frameworks/intl/entity_recognition/phone_number_recognition/include",
+    "//base/global/i18n/frameworks/intl/include",
+    "//base/global/i18n/frameworks/intl/parameter_upgrade/include",
+    "//base/global/i18n/interfaces/native/inner_api/i18n/include",
+  ]
+}
+ohos_shared_library("intl_util") {
+  branch_protector_ret = "pac_ret"
+  public_configs = [ ":intl_util_config" ]
+  include_dirs = []
+  sources = [ "src/lunar_calendar.cpp" ]
+  external_deps = [
+    "hilog:libhilog",
+    "icu:shared_icui18n",
+    "icu:shared_icuuc",
+  ]
+  cflags_cc = [
+    "-Wall",
+    "-fPIC",
+    "-frtti",
+  ]
+  remove_configs = [ "//build/config/compiler:no_rtti" ]
+  use_exceptions = true
+  if (!build_ohos_sdk) {
+    sources += [
+      "entity_recognition/date_time_recognition/src/date_rule_init.cpp",
+      "entity_recognition/date_time_recognition/src/date_time_filter.cpp",
+      "entity_recognition/date_time_recognition/src/date_time_matched.cpp",
+      "entity_recognition/date_time_recognition/src/date_time_rule.cpp",
+      "entity_recognition/date_time_recognition/src/date_time_sequence.cpp",
+      "entity_recognition/date_time_recognition/src/rules_engine.cpp",
+      "entity_recognition/phone_number_recognition/src/border_rule.cpp",
+      "entity_recognition/phone_number_recognition/src/code_rule.cpp",
+      "entity_recognition/phone_number_recognition/src/find_rule.cpp",
+      "entity_recognition/phone_number_recognition/src/negative_rule.cpp",
+      "entity_recognition/phone_number_recognition/src/phone_number_matched.cpp",
+      "entity_recognition/phone_number_recognition/src/phone_number_rule.cpp",
+      "entity_recognition/phone_number_recognition/src/positive_rule.cpp",
+      "entity_recognition/phone_number_recognition/src/regex_rule.cpp",
+      "entity_recognition/src/entity_recognizer.cpp",
+      "parameter_upgrade/src/signature_verifier.cpp",
+      "parameter_upgrade/src/upgrade_utils.cpp",
+      "src/character.cpp",
+      "src/collator.cpp",
+      "src/date_time_format.cpp",
+      "src/holiday_manager.cpp",
+      "src/i18n_break_iterator.cpp",
+      "src/i18n_calendar.cpp",
+      "src/i18n_normalizer.cpp",
+      "src/i18n_timezone.cpp",
+      "src/index_util.cpp",
+      "src/locale_compare.cpp",
+      "src/locale_config.cpp",
+      "src/locale_data.cpp",
+      "src/locale_info.cpp",
+      "src/locale_matcher.cpp",
+      "src/locale_util.cpp",
+      "src/measure_data.cpp",
+      "src/multi_users.cpp",
+      "src/number_format.cpp",
+      "src/phone_number_format.cpp",
+      "src/plural_rules.cpp",
+      "src/relative_time_format.cpp",
+      "src/simple_date_time_format.cpp",
+      "src/simple_number_format.cpp",
+      "src/styled_number_format.cpp",
+      "src/system_locale_manager.cpp",
+      "src/taboo.cpp",
+      "src/taboo_utils.cpp",
+      "src/utils.cpp",
+    ]
+    version_script = "libintl_util.map"
+    deps = [
+      ":CN_phonenumber_xml",
+      ":GB_phonenumber_xml",
+      ":bo_lang_xml",
+      ":common_datetime_xml",
+      ":common_phonenumber_xml",
+      ":config_locales_old_xml",
+      ":config_locales_xml",
+      ":dialect_languages_xml",
+      ":en_Latn_lang_xml",
+      ":en_datetime_xml",
+      ":i18n.para",
+      ":i18n.para.dac",
+      ":i18n_param_config_xml",
+      ":lang_supported_locales",
+      ":region_supported_locales_xml",
+      ":root_timezone_xml",
+      ":timezones_xml",
+      ":ug_lang_xml",
+      ":zh_Hans_lang_xml",
+      ":zh_Hans_timezone_xml",
+      ":zh_Hant_HK_lang_xml",
+      ":zh_Hant_lang_xml",
+      ":zh_datetime_xml",
+    ]
+    external_deps += [
+      "access_token:libaccesstoken_sdk",
+      "access_token:libtokenid_sdk",
+      "c_utils:utils",
+      "config_policy:configpolicy_util",
+      "icu:icundk",
+      "init:libbegetutil",
+      "ipc:ipc_core",
+      "libphonenumber:phonenumber_standard",
+      "libpng:libpng",
+      "libxml2:libxml2",
+      "openssl:libcrypto_shared",
+      "openssl:libssl_shared",
+      "os_account:os_account_innerkits",
+      "preferences:native_preferences",
+    ]
+    public_external_deps = []
+    defines = []
+    if (i18n_support_ui) {
+      public_external_deps += [
+        "ability_base:base",
+        "ability_base:configuration",
+        "ability_base:want",
+      ]
+      external_deps += [
+        "ability_runtime:ability_manager",
+        "ability_runtime:app_manager",
+        "common_event_service:cesfwk_innerkits",
+      ]
+      defines += [ "SUPPORT_GRAPHICS" ]
+    }
+    if (is_asan) {
+      defines += [ "SUPPORT_ASAN" ]
+    }
+    if (target_platform == "pc") {
+      defines += [ "SUPPORT_MULTI_USER" ]
+    }
+  }
+  install_images = [ system_base_dir ]
+  relative_install_dir = "platformsdk"
+  subsystem_name = "global"
+  innerapi_tags = [ "platformsdk" ]
+  part_name = "i18n"
+}
+
+ohos_prebuilt_para("i18n.para") {
+  source = "//base/global/i18n/frameworks/intl/etc/i18n.para"
+  part_name = "i18n"
+  subsystem_name = "global"
+  module_install_dir = "etc/param"
+}
+
+ohos_prebuilt_para("i18n.para.dac") {
+  source = "//base/global/i18n/frameworks/intl/etc/i18n.para.dac"
+  part_name = "i18n"
+  subsystem_name = "global"
+  module_install_dir = "etc/param"
+}
+
+ohos_prebuilt_etc("config_locales_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/supported_locales.xml"
+  module_install_dir = "usr/ohos_locale_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("config_locales_old_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/supported_locales_old.xml"
+  module_install_dir = "usr/ohos_locale_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("i18n_param_config_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/i18n_param_config.xml"
+  module_install_dir = "etc/xml/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("CN_phonenumber_xml") {
+  source = "//base/global/i18n/frameworks/intl/entity_recognition/etc/phonenumber/CN.xml"
+  module_install_dir = "usr/ohos_locale_config/phonenumber/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("GB_phonenumber_xml") {
+  source = "//base/global/i18n/frameworks/intl/entity_recognition/etc/phonenumber/GB.xml"
+  module_install_dir = "usr/ohos_locale_config/phonenumber/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("common_phonenumber_xml") {
+  source = "//base/global/i18n/frameworks/intl/entity_recognition/etc/phonenumber/common.xml"
+  module_install_dir = "usr/ohos_locale_config/phonenumber/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("zh_datetime_xml") {
+  source = "//base/global/i18n/frameworks/intl/entity_recognition/etc/datetime/zh.xml"
+  module_install_dir = "usr/ohos_locale_config/datetime/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("en_datetime_xml") {
+  source = "//base/global/i18n/frameworks/intl/entity_recognition/etc/datetime/en.xml"
+  module_install_dir = "usr/ohos_locale_config/datetime/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("common_datetime_xml") {
+  source = "//base/global/i18n/frameworks/intl/entity_recognition/etc/datetime/common.xml"
+  module_install_dir = "usr/ohos_locale_config/datetime/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("lang_supported_locales") {
+  source = "//base/global/i18n/frameworks/intl/etc/lang/supported_locales.xml"
+  module_install_dir = "etc/ohos_lang_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("zh_Hans_lang_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/lang/zh-Hans.xml"
+  module_install_dir = "etc/ohos_lang_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("zh_Hant_lang_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/lang/zh-Hant.xml"
+  module_install_dir = "etc/ohos_lang_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("zh_Hant_HK_lang_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/lang/zh-Hant-HK.xml"
+  module_install_dir = "etc/ohos_lang_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("bo_lang_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/lang/bo.xml"
+  module_install_dir = "etc/ohos_lang_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("ug_lang_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/lang/ug.xml"
+  module_install_dir = "etc/ohos_lang_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("zh_Hans_timezone_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/timezone/zh_Hans.xml"
+  module_install_dir = "usr/ohos_timezone/ohos_city_dispname/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("en_Latn_lang_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/lang/en-Latn.xml"
+  module_install_dir = "etc/ohos_lang_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("root_timezone_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/timezone/root.xml"
+  module_install_dir = "usr/ohos_timezone/ohos_city_dispname/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("timezones_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/timezone/ohos_timezones.xml"
+  module_install_dir = "usr/ohos_timezone/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("region_supported_locales_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/region/supported_regions.xml"
+  module_install_dir = "usr/ohos_locale_config/region/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+ohos_prebuilt_etc("dialect_languages_xml") {
+  source = "//base/global/i18n/frameworks/intl/etc/dialect_languages.xml"
+  module_install_dir = "usr/ohos_locale_config/"
+  part_name = "i18n"
+  subsystem_name = "global"
+}

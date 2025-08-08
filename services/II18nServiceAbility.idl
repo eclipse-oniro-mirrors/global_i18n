@@ -1,0 +1,26 @@
+/*
+ * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+interface OHOS.Global.I18n.II18nServiceAbility {
+    void SetSystemLanguage([in] String language, [out] int code);
+    void SetSystemRegion([in] String region, [out] int code);
+    void SetSystemLocale([in] String locale, [out] int code);
+    void Set24HourClock([in] String flag, [out] int code);
+    void SetUsingLocalDigit([in] boolean flag, [out] int code);
+    void AddPreferredLanguage([in] String language, [in] int index, [out] int code);
+    void RemovePreferredLanguage([in] int index, [out] int code);
+    void SetTemperatureType([in] int type, [out] int code);
+    void SetFirstDayOfWeek([in] int type, [out] int code);
+};
