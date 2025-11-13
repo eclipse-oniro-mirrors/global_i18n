@@ -1,0 +1,45 @@
+# Copyright (c) 2025 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//base/global/i18n/i18n.gni")
+import("//build/config/components/init/param/param_fixer.gni")
+import("//build/ohos.gni")
+
+ohos_shared_library("native_i18n") {
+  branch_protector_ret = "pac_ret"
+  include_dirs = [
+    "//base/global/i18n/frameworks/intl/include",
+    "//base/global/i18n/ndk/include",
+  ]
+  cflags_cc = [
+    "-Wall",
+    "-fPIC",
+    "-frtti",
+  ]
+  remove_configs = [ "//build/config/compiler:no_rtti" ]
+
+  sources = [ "src/oh_timezone.cpp" ]
+  deps = [ "//base/global/i18n/frameworks/intl:intl_util" ]
+  external_deps = [ 
+    "c_utils:utils",
+    "hilog:libhilog",
+    "icu:shared_icui18n",
+    "icu:shared_icuuc",
+  ]
+
+  relative_install_dir = "ndk"
+  output_name = "ohi18n"
+  output_extension = "so"
+  subsystem_name = "global"
+  part_name = "i18n"
+}
