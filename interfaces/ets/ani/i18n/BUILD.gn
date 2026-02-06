@@ -1,0 +1,78 @@
+# Copyright (c) 2025 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//base/global/i18n/i18n.gni")
+import("//build/config/components/ets_frontend/ets2abc_config.gni")
+import("//build/ohos.gni")
+
+ohos_shared_library("i18n_ani") {
+  include_dirs = [
+    "./include",
+    "../intl/include",
+    "../../../../services/include",
+    "../../../native/inner_api/preferred_language/include",
+  ]
+  cflags_cc = [ "-frtti" ]
+  remove_configs = [ "//build/config/compiler:no_rtti" ]
+  sources = [
+    "./src/entity_recognizer_addon.cpp",
+    "./src/error_util.cpp",
+    "./src/holiday_manager_addon.cpp",
+    "./src/i18n_addon.cpp",
+    "./src/i18n_calendar_addon.cpp",
+    "./src/i18n_normalizer_addon.cpp",
+    "./src/i18n_system_addon.cpp",
+    "./src/i18n_timezone_addon.cpp",
+    "./src/i18n_unicode_addon.cpp",
+    "./src/simple_date_time_format_addon.cpp",
+    "./src/simple_number_format_addon.cpp",
+    "./src/system_locale_manager_addon.cpp",
+    "./src/variable_converter.cpp",
+  ]
+  deps = [
+    "../../../../frameworks/intl:intl_util",
+    "../../../../frameworks/intl:preferred_language",
+    "../../../../services:i18n_sa_client",
+  ]
+  external_deps = [
+    "hilog:libhilog",
+    "icu:shared_icui18n",
+    "icu:shared_icuuc",
+    "libphonenumber:phonenumber_standard",
+    "libpng:libpng",
+    "libxml2:libxml2",
+    "runtime_core:ani",
+  ]
+
+  defines = []
+  if (i18n_support_app_preferred_language) {
+    defines += [ "SUPPORT_APP_PREFERRED_LANGUAGE" ]
+  }
+  part_name = "i18n"
+  subsystem_name = "global"
+}
+
+generate_static_abc("i18n") {
+  base_url = "./ets"
+  files = [ "./ets/@ohos.i18n.ets" ]
+  is_boot_abc = "True"
+  device_dst_file = "system/framework/i18n.abc"
+}
+
+ohos_prebuilt_etc("i18n_etc") {
+  source = "$target_out_dir/i18n.abc"
+  module_install_dir = "framework"
+  part_name = "i18n"
+  subsystem_name = "global"
+  deps = [ ":i18n" ]
+}
