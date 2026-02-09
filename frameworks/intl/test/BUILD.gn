@@ -1,0 +1,98 @@
+# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//base/global/i18n/i18n.gni")
+import("//build/test.gni")
+
+module_output_path = "i18n/i18n"
+
+ohos_unittest("intl_test") {
+  module_out_path = module_output_path
+
+  cflags_cc = [ "-Wno-inconsistent-missing-override" ]
+
+  sources = [
+    "unittest/collator_test.cpp",
+    "unittest/displaynames_test.cpp",
+    "unittest/convert_test.cpp",
+    "unittest/customized_data_test.cpp",
+    "unittest/customized_date_time_format_test.cpp",
+    "unittest/i18n_test.cpp",
+    "unittest/intl_date_time_format_test.cpp",
+    "unittest/intl_plural_rules_test.cpp",
+    "unittest/intl_test.cpp",
+    "unittest/intl_test_extent.cpp",
+    "unittest/lunar_calendar_test.cpp",
+    "unittest/locale_config_test.cpp",
+    "unittest/mock/src/generate_ics_file.cpp",
+    "unittest/mock/src/i18n_timezone_mock.cpp",
+    "unittest/mock/src/phone_number_format_mock.cpp",
+    "unittest/number_format_test.cpp",
+    "unittest/number_format_test_extend.cpp",
+    "unittest/phone_number_format_test.cpp",
+    "unittest/relative_time_format_test.cpp",
+    "unittest/styled_format_test.cpp",
+    "unittest/timezone_location_test.cpp",
+    "unittest/translit_test.cpp",
+  ]
+  include_dirs = [
+    "//base/global/i18n/frameworks/intl/entity_recognition/include",
+    "//base/global/i18n/frameworks/intl/entity_recognition/phone_number_recognition/include",
+    "//base/global/i18n/frameworks/intl/entity_recognition/date_time_recognition/include",
+    "//base/global/i18n/frameworks/intl/include",
+    "//base/global/i18n/frameworks/intl/parameter_upgrade/include",
+    "//base/global/i18n/frameworks/intl/test/unittest/mock/include",
+    "//base/global/i18n/frameworks/intl/timezone/include",
+    "//base/global/i18n/interfaces/native/inner_api/i18n/include",
+    "//base/global/i18n/interfaces/native/inner_api/preferred_language/include",
+    "//base/global/i18n/services/include",
+  ]
+
+  external_deps = [
+    "access_token:libaccesstoken_sdk",
+    "access_token:libnativetoken",
+    "access_token:libtoken_setproc",
+    "cJSON:cjson_static",
+    "c_utils:utils",
+    "googletest:gmock",
+    "googletest:gtest",
+    "hilog:libhilog",
+    "icu:shared_icui18n",
+    "icu:shared_icuuc",
+    "init:libbegetutil",
+    "ipc:ipc_core",
+    "libphonenumber:phonenumber_standard",
+    "libpng:libpng",
+    "libxml2:libxml2",
+    "openssl:libssl_shared",
+    "preferences:native_preferences",
+    "selinux_adapter:librestorecon",
+  ]
+  defines = []
+  if (i18n_support_app_preferred_language) {
+    defines += [ "SUPPORT_APP_PREFERRED_LANGUAGE" ]
+  }
+  if (target_platform == "pc") {
+    defines += [ "SUPPORT_MULTI_USER" ]
+  }
+
+  deps = [
+    "//base/global/i18n/frameworks/intl:build_module",
+    "//base/global/i18n/services:i18n_sa_client",
+  ]
+}
+
+group("unittest") {
+  testonly = true
+  deps = [ ":intl_test" ]
+}
